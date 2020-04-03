@@ -2,85 +2,40 @@ package com.epass.backgroundrop;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
 import com.amazonaws.services.s3.model.S3Object;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
-@SpringBootApplication
 public class BackgroundropApplication {
     public static void main(String[] args) throws IOException {
-        Regions clientRegion = Regions.DEFAULT_REGION;
-        String bucketName = "*** Bucket name ***";
-        String key = "*** Object key ***";
 
-        S3Object fullObject = null, objectPortion = null, headerOverrideObject = null;
+        String bucketName = "itau-study";
+        String key = "test.json";
+
+        /*var awsCreds = new BasicAWSCredentials("AKIA3KSG7BUX36LTLX6C", "flsjeA88TQdOPZ/F4yi8g0rHPdX5YyBO2uLqGJl2");*/
+
         try {
-            AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
-                    .withRegion(clientRegion)
-                    .withCredentials(new ProfileCredentialsProvider())
+
+            AmazonS3 s3client = AmazonS3ClientBuilder
+                    .standard()
+                    /*.withCredentials(new AWSStaticCredentialsProvider(awsCreds))*/
+                    .withRegion(Regions.SA_EAST_1)
                     .build();
 
-            // Get an object and print its contents.
-            System.out.println("Downloading an object");
-            fullObject = s3Client.getObject(new GetObjectRequest(bucketName, key));
-            System.out.println("Content-Type: " + fullObject.getObjectMetadata().getContentType());
-            System.out.println("Content: ");
-            displayTextInputStream(fullObject.getObjectContent());
-
-            // Get a range of bytes from an object and print the bytes.
-            GetObjectRequest rangeObjectRequest = new GetObjectRequest(bucketName, key)
-                    .withRange(0, 9);
-            objectPortion = s3Client.getObject(rangeObjectRequest);
-            System.out.println("Printing bytes retrieved.");
-            displayTextInputStream(objectPortion.getObjectContent());
-
-            // Get an entire object, overriding the specified response headers, and print the object's content.
-            ResponseHeaderOverrides headerOverrides = new ResponseHeaderOverrides()
-                    .withCacheControl("No-cache")
-                    .withContentDisposition("attachment; filename=example.txt");
-            GetObjectRequest getObjectRequestHeaderOverride = new GetObjectRequest(bucketName, key)
-                    .withResponseHeaders(headerOverrides);
-            headerOverrideObject = s3Client.getObject(getObjectRequestHeaderOverride);
-            displayTextInputStream(headerOverrideObject.getObjectContent());
-        } catch (AmazonServiceException e) {
-            // The call was transmitted successfully, but Amazon S3 couldn't process
-            // it, so it returned an error response.
-            e.printStackTrace();
-        } catch (SdkClientException e) {
-            // Amazon S3 couldn't be contacted for a response, or the client
-            // couldn't parse the response from Amazon S3.
-            e.printStackTrace();
-        } finally {
-            // To ensure that the network connection doesn't remain open, close any open input streams.
-            if (fullObject != null) {
-                fullObject.close();
-            }
-            if (objectPortion != null) {
-                objectPortion.close();
-            }
-            if (headerOverrideObject != null) {
-                headerOverrideObject.close();
-            }
+            System.out.println(s3client.listBuckets());
         }
-    }
-
-    private static void displayTextInputStream(InputStream input) throws IOException {
-        // Read the text input stream one line at a time and display each line.
-        BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-        String line = null;
-        while ((line = reader.readLine()) != null) {
-            System.out.println(line);
+        catch (Exception e){
+            throw e;
         }
-        System.out.println();
     }
 }
+
+
