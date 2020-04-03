@@ -4,12 +4,14 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.epass.backgroundrop.gateway.ObjectStorageGateway;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class ObjectStorageDataProvider implements ObjectStorageGateway {
@@ -35,13 +37,19 @@ public class ObjectStorageDataProvider implements ObjectStorageGateway {
         }
     }
 
-    public List<Bucket> getBuckets(){
-        System.out.println(this.key + this.bucketName);
-        return getS3Client().listBuckets();
+    public List<String> getBuckets() {
+        List<Bucket> buckets = getS3Client().listBuckets();
+        return buckets.stream().map(bucket -> bucket.getName()).collect(Collectors.toList());
     }
 
-    public Optional<Bucket> getBucket(String bucketName){
-        return getS3Client().listBuckets().stream().filter(bucket -> bucket.getName().equals(bucketName)).findFirst();
+    public Optional<Bucket> getBucket(String bucketName) {
+        return getS3Client().listBuckets().stream().filter(b -> b.getName().equals(bucketName)).findFirst();
+    }
+
+    @Override
+    public Object getObject() {
+        var fullObject = getS3Client().getObject(new GetObjectRequest(bucketName, key));
+        return fullObject;
     }
 
 }
