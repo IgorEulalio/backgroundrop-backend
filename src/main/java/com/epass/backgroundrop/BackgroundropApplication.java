@@ -11,30 +11,20 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
+import com.epass.backgroundrop.dataprovider.ObjectStorageDataProvider;
+import com.epass.backgroundrop.gateway.ObjectStorageGateway;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import java.io.IOException;
-
+@SpringBootApplication
 public class BackgroundropApplication {
-    public static void main(String[] args) throws IOException {
 
-        String bucketName = "itau-study";
-        String key = "test.json";
+    @Autowired
+    private ObjectStorageGateway objectProvider;
 
-        /*var awsCreds = new BasicAWSCredentials("AKIA3KSG7BUX36LTLX6C", "flsjeA88TQdOPZ/F4yi8g0rHPdX5YyBO2uLqGJl2");*/
-
-        try {
-
-            AmazonS3 s3client = AmazonS3ClientBuilder
-                    .standard()
-                    /*.withCredentials(new AWSStaticCredentialsProvider(awsCreds))*/
-                    .withRegion(Regions.SA_EAST_1)
-                    .build();
-
-            System.out.println(s3client.listBuckets());
-        }
-        catch (Exception e){
-            throw e;
-        }
+    public static void main(String[] args) {
+        SpringApplication.run(BackgroundropApplication.class);
     }
 }
 
