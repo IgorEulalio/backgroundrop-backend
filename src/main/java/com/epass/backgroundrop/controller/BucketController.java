@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -33,9 +34,16 @@ public class BucketController {
         return ResponseEntity.ok().body(bucket.get());
     }
 
-    @GetMapping(path = "/{id_bucket}/objects/", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> getObjects(@PathVariable(name = "id_bucket", required = true) String id){
-        return ResponseEntity.ok().body(objectStorageProvider.getObject());
+    @GetMapping(path = "/{id_bucket}/objects", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<String>> getObjects(@PathVariable(name = "id_bucket", required = true) String id) {
+        return ResponseEntity.ok().body(objectStorageProvider.getBucketObjects(id));
     }
 
+    @GetMapping(path = "/{id_bucket}/objects/{id_object}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> getObject(
+            @PathVariable(name = "id_bucket", required = true) String id,
+            @PathVariable(name = "id_object", required = true) String id_object
+    ) throws IOException {
+        return ResponseEntity.ok().body(objectStorageProvider.getBucketObject(id, id_object));
+    };
 }

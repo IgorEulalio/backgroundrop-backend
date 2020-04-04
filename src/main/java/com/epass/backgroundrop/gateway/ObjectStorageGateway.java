@@ -6,26 +6,14 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
 public interface ObjectStorageGateway {
 
-     private static AmazonS3 getS3Client() {
-         try {
-
-             AmazonS3 s3client = AmazonS3ClientBuilder
-                     .standard()
-                     .withRegion(Regions.SA_EAST_1)
-                     .build();
-             return s3client;
-
-         } catch (Exception e) {
-             throw e;
-         }
-     }
-
     public List<String> getBuckets();
     public Optional<Bucket> getBucket(String bucketName);
-    public Object getObject();
+    public List<String> getBucketObjects(String bucketName);
+    public Object getBucketObject(String bucketName, String keyName) throws IOException;
  }
